@@ -1,0 +1,30 @@
+<template name="Form">
+	{{#template withForm}}
+		{{autosave}}
+		{{> UI.contentBlock this}}
+	{{/template}}
+</template>
+
+<template name="__DefaultForm">
+	<form>
+		{{> UI.contentBlock}}
+	</form>
+</template>
+
+<template name="TextInput">
+	{{#if UI.contentBlock}}
+		{{> UI.contentBlock usefulField this ..}}
+	{{else}}
+		{{> template usefulField this ..}}
+	{{/if}}
+</template>
+
+<template name="__DefaultTextInput">
+	<input
+		type="{{#if type}}{{type}}{{else}}text{{/if}}"
+		name="{{name}}"
+		value="{{value}}"
+		placeholder="{{placeholder}}"
+		class="{{class}}"
+		>
+</template>
