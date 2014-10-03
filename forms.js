@@ -30,7 +30,7 @@ ShadowObject.shadow.fn.resetWithGuards = function (val) {
 	var saving = Deps.nonreactive(function () {return self.hasPendingSave();});
 	var changes = Deps.nonreactive(function () {return self.hasChanges();});
 
-	self.resetFormHelpers();
+	self.resetFormHelpers(true);
 
 	if (saving) {
 		self._pendingReset = val;
@@ -56,8 +56,8 @@ ShadowObject.shadow.fn.resetWithGuards = function (val) {
 		self.resetOriginal(val);
 	}
 };
-ShadowObject.shadow.fn.resetFormHelpers = function () {
-	this.messages(null);
+ShadowObject.shadow.fn.resetFormHelpers = function (preserveMessages) {
+	if (!preserveMessages) this.messages(null);
 	this.dirty(false);
 	if (this.properties) {
 		_.each(this.properties, function (prop) {
@@ -143,6 +143,28 @@ Template.Form.events({
 	}
 });
 
+Template.SelectInput.helpers({
+	template: function () {
+		if (this.template) {
+			if (Template[this.template]) return Template[this.template];
+			else {
+				throw new Error('template not found');	
+			}
+		} else {
+			return Template.DefaultSelectInput || Template.__DefaultSelectInput;
+		}
+	}
+});
+
+Template.SelectInput.events({
+	'change': function (e) {
+		this.item[this.name] = e.currentTarget.value;
+	}
+	, 'blur': function () {
+		this.dirty(true);
+	}
+});
+
 Template.TextInput.helpers({
 	template: function () {
 		if (this.template) {
@@ -174,8 +196,17 @@ UI.registerHelper('usefulField', function (field, item) {
 			name: field
 		};
 	}
-	return _.defaults({}, field, {
+	var result = _.defaults({}, field, {
 		item: item
 		, value: item[field.name]
 	}, (item._ && item._.shadow[field.name] || {})._);
+
+	if (result.schema) {
+		var validator = _.find([].concat(result.schema.rules), function (a) {
+			return _.isArray(a.options);
+		});
+		if (validator) result.options = validator.options;
+	}
+
+	return result;
 });

@@ -28,3 +28,23 @@
 		class="{{class}}"
 		>
 </template>
+
+<template name="SelectInput">
+	{{#if UI.contentBlock}}
+		{{> UI.contentBlock usefulField this ..}}
+	{{else}}
+		{{> template usefulField this ..}}
+	{{/if}}
+</template>
+
+<template name="__DefaultSelectInput">
+	<select
+		name="{{name}}"
+		placeholder="{{placeholder}}"
+		class="{{class}}"
+		>
+		{{#each options}}
+			<option value="{{_id}}">{{name}}</option>
+		{{/each}}
+	</select>
+</template>
