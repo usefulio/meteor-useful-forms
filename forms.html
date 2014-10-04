@@ -29,6 +29,42 @@
 		>
 </template>
 
+<template name="DateInput">
+	{{#if UI.contentBlock}}
+		{{> UI.contentBlock usefulField this ..}}
+	{{else}}
+		{{> template usefulField this ..}}
+	{{/if}}
+</template>
+
+<template name="__DefaultDateInput">
+	<input
+		type="{{#if type}}{{type}}{{else}}date{{/if}}"
+		name="{{name}}"
+		value="{{value}}"
+		placeholder="{{placeholder}}"
+		class="{{class}}"
+		>
+</template>
+
+<template name="TimeInput">
+	{{#if UI.contentBlock}}
+		{{> UI.contentBlock usefulField this ..}}
+	{{else}}
+		{{> template usefulField this ..}}
+	{{/if}}
+</template>
+
+<template name="__DefaultTimeInput">
+	<input
+		type="{{#if type}}{{type}}{{else}}date{{/if}}"
+		name="{{name}}"
+		value="{{value}}"
+		placeholder="{{placeholder}}"
+		class="{{class}}"
+		>
+</template>
+
 <template name="SelectInput">
 	{{#if UI.contentBlock}}
 		{{> UI.contentBlock usefulField this ..}}

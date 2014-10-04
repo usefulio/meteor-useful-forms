@@ -187,6 +187,50 @@ Template.TextInput.events({
 	}
 });
 
+Template.DateInput.helpers({
+	template: function () {
+		if (this.template) {
+			if (Template[this.template]) return Template[this.template];
+			else {
+				throw new Error('template not found');	
+			}
+		} else {
+			return Template.DefaultDateInput || Template.__DefaultDateInput;
+		}
+	}
+});
+
+Template.DateInput.events({
+	'change': function (e) {
+		this.item[this.name] = e.currentTarget.value;
+	}
+	, 'blur': function () {
+		this.dirty(true);
+	}
+});
+
+Template.TimeInput.helpers({
+	template: function () {
+		if (this.template) {
+			if (Template[this.template]) return Template[this.template];
+			else {
+				throw new Error('template not found');	
+			}
+		} else {
+			return Template.DefaultTimeInput || Template.__DefaultTimeInput;
+		}
+	}
+});
+
+Template.TimeInput.events({
+	'change': function (e) {
+		this.item[this.name] = e.currentTarget.value;
+	}
+	, 'blur': function () {
+		this.dirty(true);
+	}
+});
+
 UI.registerHelper('usefulField', function (field, item) {
 	if (!item) {
 		item = this;
@@ -203,7 +247,7 @@ UI.registerHelper('usefulField', function (field, item) {
 
 	if (result.schema) {
 		var validator = _.find([].concat(result.schema.rules), function (a) {
-			return _.isArray(a.options);
+			return a && _.isArray(a.options);
 		});
 		if (validator) result.options = validator.options;
 	}
