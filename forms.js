@@ -73,23 +73,58 @@ ShadowObject.shadow.fn.messages = function (val) {
 		return this._messages.get();
 	}
 };
-
-// XXX cache shadow object on form
-// first we need to implement original handling in shadow-object so we can
-// change the 'original' property
-
-Template.Form.helpers({
-	template: function () {
-		if (this._.template) {
-			if (Template[this._.template]) return Template[this._.template];
-			else {
-				throw new Error('template not found');	
-			}
-		} else {
-			return Template.DefaultForm || Template.__DefaultForm;
-		}
+ShadowObject.property.fn.options = function () {
+	if (this.schema) {
+		var validator = _.find([].concat(this.schema.rules), function (a) {
+			return a && _.isArray(a.options);
+		});
+		if (validator) return validator.options;
 	}
-	, withForm: function () {
+	// else return;
+};
+
+Template.input.helpers({
+	template: function () {
+		var type = this.type || '';
+		type = this.type.slice(0, 1).toUpperCase() + this.type.slice(1);
+
+		return Template[this.template + type + 'Input'] ||
+				Template[this.template] ||
+				Template['Default' + type + 'Input'] ||
+				Template['__default' + type + 'Input'] ||
+				Template['__defaultInput'] ||
+				null;
+	}
+	, field: function (item) {
+		var field = this;
+		if (typeof field == 'string') {
+			field = {
+				name: field
+			};
+		}
+
+		result = _.extend({}
+			, (item._ && item._.shadow[field.name] || {})._
+			, field
+			, {
+				item: item
+				, value: item[field.name]
+			}
+			);
+
+		return result;
+	}
+});
+
+Template.form.helpers({
+	template: function () {
+		return Template[this.template] ||
+				Template[this.template + 'Form'] ||
+				Template['__' + this.template] ||
+				Template['__' + this.template + 'Form'] ||
+				null;
+	}
+	, item: function () {
 		var view = UI.getView();
 
 		if (view.shadow) {
@@ -100,14 +135,10 @@ Template.Form.helpers({
 		}
 		return view.shadow;
 	}
-	, autosave: function () {
-		if (this._.hasChanges()) {
-			$(UI.currentView.firstNode().parentElement).trigger('autosave');
-		}
-	}
+
 });
 
-Template.Form.events({
+Template.form.events({
 	'submit form': function (e, tmpl) {
 		e.preventDefault();
 		if (this._.hasChanges()) {
@@ -128,129 +159,16 @@ Template.Form.events({
 			}]);
 		}
 	}
-	, 'change form': function (e, tmpl) {
-		if (this._.hasChanges()) {
-			this._.messages([{
-				kind: 'info'
-				, message: 'There are unsaved changes.'
-			}]);
-		} else {
-			this._.messages([{
-				kind: 'info'
-				, message: "Nothing to save."
-			}]);
-		}
-	}
 });
 
-Template.SelectInput.helpers({
-	template: function () {
-		if (this.template) {
-			if (Template[this.template]) return Template[this.template];
-			else {
-				throw new Error('template not found');	
+Forms = {
+	DefaultInputEvents: {
+		// XXX be more explicit about which events we handle.
+		// XXX perform validation
+		'change': function (e, tmpl) {
+			if (e.currentTarget.name == this.name) {
+				this.item[this.name] = e.currentTarget.value;
 			}
-		} else {
-			return Template.DefaultSelectInput || Template.__DefaultSelectInput;
 		}
 	}
-});
-
-Template.SelectInput.events({
-	'change': function (e) {
-		this.item[this.name] = e.currentTarget.value;
-	}
-	, 'blur': function () {
-		this.dirty(true);
-	}
-});
-
-Template.TextInput.helpers({
-	template: function () {
-		if (this.template) {
-			if (Template[this.template]) return Template[this.template];
-			else {
-				throw new Error('template not found');	
-			}
-		} else {
-			return Template.DefaultTextInput || Template.__DefaultTextInput;
-		}
-	}
-});
-
-Template.TextInput.events({
-	'change': function (e) {
-		this.item[this.name] = e.currentTarget.value;
-	}
-	, 'blur': function () {
-		this.dirty(true);
-	}
-});
-
-Template.DateInput.helpers({
-	template: function () {
-		if (this.template) {
-			if (Template[this.template]) return Template[this.template];
-			else {
-				throw new Error('template not found');	
-			}
-		} else {
-			return Template.DefaultDateInput || Template.__DefaultDateInput;
-		}
-	}
-});
-
-Template.DateInput.events({
-	'change': function (e) {
-		this.item[this.name] = e.currentTarget.value;
-	}
-	, 'blur': function () {
-		this.dirty(true);
-	}
-});
-
-Template.TimeInput.helpers({
-	template: function () {
-		if (this.template) {
-			if (Template[this.template]) return Template[this.template];
-			else {
-				throw new Error('template not found');	
-			}
-		} else {
-			return Template.DefaultTimeInput || Template.__DefaultTimeInput;
-		}
-	}
-});
-
-Template.TimeInput.events({
-	'change': function (e) {
-		this.item[this.name] = e.currentTarget.value;
-	}
-	, 'blur': function () {
-		this.dirty(true);
-	}
-});
-
-UI.registerHelper('usefulField', function (field, item) {
-	if (!item) {
-		item = this;
-	}
-	if (typeof field == 'string') {
-		field = {
-			name: field
-		};
-	}
-	var result = _.defaults({}, field, {
-		item: item
-		, value: item[field.name]
-	}, (item._ && item._.shadow[field.name] || {})._);
-
-	if (result.schema) {
-		var validator = _.find([].concat(result.schema.rules), function (a) {
-			return a && _.isArray(a.options);
-		});
-		if (validator) result.options = validator.options;
-	}
-
-	return result;
-});
+};

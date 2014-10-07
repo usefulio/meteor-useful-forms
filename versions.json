@@ -10,7 +10,7 @@
     ],
     [
       "cwohlman:rules",
-      "0.1.0"
+      "0.1.2"
     ],
     [
       "cwohlman:schema",
@@ -90,6 +90,6 @@
     ]
   ],
   "pluginDependencies": [],
-  "toolVersion": "meteor-tool@1.0.32",
+  "toolVersion": "meteor-tool@1.0.33",
   "format": "1.0"
 }
