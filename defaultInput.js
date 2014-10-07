@@ -1,0 +1,1 @@
+Template.__defaultInput.events(Forms.DefaultInputEvents);

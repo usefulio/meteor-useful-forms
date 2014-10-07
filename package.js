@@ -7,12 +7,22 @@ Package.describe({
 
 Package.on_use(function (api, where) {
   api.versionsFrom('0.9.3');
-  api.use('templating');
-  api.use('ui');
-  api.use('cwohlman:shadow-objects@0.1.1');
-  api.use('reactive-var');
+  api.use(['templating', 'ui', 'cwohlman:shadow-objects@0.1.1', 'reactive-var']);
+  
+  // Core api
   api.add_files('forms.html', ['client']);
   api.add_files('forms.js', ['client']);
+
+  // Default Templates
+  api.add_files('defaultInput.html', ['client']);
+  api.add_files('defaultInput.js', ['client']);
+  api.add_files('defaultSelectInput.html', ['client']);
+  api.add_files('defaultSelectInput.js', ['client']);
+  api.add_files('defaultTextareaInput.html', ['client']);
+  api.add_files('defaultTextareaInput.js', ['client']);
+  api.add_files('defaultCheckboxInput.html', ['client']);
+  api.add_files('defaultCheckboxInput.js', ['client']);
+
   api.export('Forms');
 });
 

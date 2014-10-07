@@ -73,14 +73,19 @@ ShadowObject.shadow.fn.messages = function (val) {
 		return this._messages.get();
 	}
 };
-ShadowObject.property.fn.options = function () {
-	if (this.schema) {
-		var validator = _.find([].concat(this.schema.rules), function (a) {
-			return a && _.isArray(a.options);
-		});
-		if (validator) return validator.options;
+
+var getOptions = function (schema) {
+	if (schema.options) {
+		return schema.options;
+	} else if (_.isArray(schema.rules)) {
+		return _.chain(schema.rules).map(getOptions).filter(_.identity).first().value();
+	} else if (_.isObject(schema.rules) && _.isFunction(schema.rules.errors)) {
+		return getOptions(schema.rules);
 	}
-	// else return;
+};
+
+ShadowObject.property.fn.options = function () {
+	return this.schema && getOptions(this.schema);	
 };
 
 Template.input.helpers({
@@ -165,10 +170,43 @@ Forms = {
 	DefaultInputEvents: {
 		// XXX be more explicit about which events we handle.
 		// XXX perform validation
-		'change': function (e, tmpl) {
+		'change input, change textarea, change select': function (e, tmpl) {
 			if (e.currentTarget.name == this.name) {
-				this.item[this.name] = e.currentTarget.value;
+				// doesn't work for checkboxes
+				if ($(e.currentTarget).prop('type') == 'checkbox') {
+					this.item[this.name] = e.currentTarget.checked;
+				} else {
+					this.item[this.name] = e.currentTarget.value;
+				}
 			}
+		}
+		, 'change checkbox': function (e, tmpl) {
+			if (e.currentTarget.name == this.name) {
+				this.item[this.name] = e.currentTarget.checked;
+			}
+		}
+	}
+	, DefaultSelectHelpers: {
+		optionValue: function () {
+			// unwrap any primative types
+			var self = this.valueOf();
+			if (_.isObject(self)) {
+				return self._id || self.name;
+			} else {
+				return self;
+			}
+		}
+		, optionText: function () {
+			// unwrap any primative types
+			var self = this.valueOf();
+			if (_.isObject(self)) {
+				return self.name || self._id;
+			} else {
+				return self;
+			}
+		}
+		, optionSelected: function () {
+			return Forms.DefaultSelectHelpers.optionValue.call(this) == Template.parentData().value;
 		}
 	}
 };
