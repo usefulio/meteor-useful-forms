@@ -7,7 +7,20 @@ Package.describe({
 
 Package.on_use(function (api, where) {
   api.versionsFrom('0.9.3');
-  api.use(['templating', 'ui', 'cwohlman:shadow-objects@0.1.1', 'reactive-var']);
+  api.use(['templating', 'ui', 'reactive-var']);
+
+  // use and imply all the useful forms packages.
+  api.use("cwohlman:schema@0.1.0");
+  api.imply("cwohlman:schema");
+
+  api.use("cwohlman:rules@0.1.2");
+  api.imply("cwohlman:rules");
+
+  api.use("cwohlman:shadow-objects@0.1.1");
+  api.imply("cwohlman:shadow-objects@0.1.1");
+
+  api.use("cwohlman:collection-rules@0.1.0");
+  api.imply("cwohlman:collection-rules@0.1.0");
   
   // Core api
   api.add_files('forms.html', ['client']);
