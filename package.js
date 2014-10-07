@@ -2,7 +2,7 @@ Package.describe({
   summary: "A minimalistic forms library with reactive updates and validation."
   , name: "cwohlman:forms"
   , git: "https://github.com/cwohlman/meteor-useful-forms.git"
-  , version: "0.2.0"
+  , version: "0.2.1"
 });
 
 Package.on_use(function (api, where) {
