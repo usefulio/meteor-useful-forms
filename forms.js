@@ -136,8 +136,10 @@ Template.form.helpers({
 			view.shadow._.resetWithGuards(this.item);
 		} else {
 			view.shadow = new ShadowObject(this.schema, this.item);
-			_.defaults(view.shadow._, this);
 		}
+		
+		_.defaults(view.shadow, _.omit(this, 'item', 'schema'));
+
 		return view.shadow;
 	}
 
@@ -146,23 +148,23 @@ Template.form.helpers({
 Template.form.events({
 	'submit form': function (e, tmpl) {
 		e.preventDefault();
-		if (this._.hasChanges()) {
+		// if (this._.hasChanges()) {
 			this._.dirty(true);
 			var errors = this._.errors();
 			if (errors.length) {
-				e.stopPropagation();
+				e.stopImmediatePropagation();
 				this._.messages([{
 					kind: 'error'
 					, message: 'Form is invalid: ' + errors[0].message
 				}]);
 			}
-		} else {
-			e.stopPropagation();
-			this._.messages([{
-				kind: 'warning'
-				, message: "Nothing to save."
-			}]);
-		}
+		// } else {
+		// 	e.stopPropagation();
+		// 	this._.messages([{
+		// 		kind: 'warning'
+		// 		, message: "Nothing to save."
+		// 	}]);
+		// }
 	}
 });
 
@@ -206,7 +208,7 @@ Forms = {
 			}
 		}
 		, optionSelected: function () {
-			return Forms.DefaultSelectHelpers.optionValue.call(this) == Template.parentData().value;
+			return Forms.DefaultSelectHelpers.optionValue.call(this) == Template.parentData(1).value;
 		}
 	}
 };
