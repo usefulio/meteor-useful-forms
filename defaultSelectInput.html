@@ -1,0 +1,10 @@
+<template name="__defaultSelectInput">
+	<select name="{{name}}" class="{{class}}">
+		{{#if placeholder}}
+			<option value="" disabled selected>{{placeholder}}</option>
+		{{/if}}
+		{{#each options}}
+			<option value="{{optionValue}}" selected="{{optionSelected}}">{{optionText}}</option>
+		{{/each}}
+	</select>
+</template>
