@@ -24,3 +24,7 @@ The forms package provides some default event handling:
 - The Form block helper will bind to the submit handler and act as a shim between the native form submit and your submit handler, it will validate the current object against the specified schema and stopPropagation of the event if the item is invalid.
 - For invalid forms the helper will trigger an invalid event (not implemented)
 - The Input helpers bind to the change events on their respective elements and auto-update the underlying reactive object to reflect the state of the form element.
+
+Contributors
+-------------------
+- Joshua Ohlman
