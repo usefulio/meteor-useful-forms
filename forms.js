@@ -136,6 +136,19 @@ Template.form.helpers({
 			view.shadow._.resetWithGuards(this.item);
 		} else {
 			view.shadow = new ShadowObject(this.schema, this.item);
+			view.formId = Random.id();
+			view.onViewDestroyed(function () {
+				Forms._hasChanges[view.formId] = false;
+				Forms._checkChanges();
+			});
+		}
+
+		if (!this.dontTrackChanges) {
+			Tracker.autorun(function () {
+				Forms._hasChanges[view.formId] = 
+					!!_.keys(view.shadow._.changes()).length;
+				Forms._checkChanges();
+			});
 		}
 		
 		_.defaults(view.shadow, _.omit(this, 'item', 'schema'));
@@ -211,4 +224,23 @@ Forms = {
 			return Forms.DefaultSelectHelpers.optionValue.call(this) == Template.parentData(1).value;
 		}
 	}
+	, _hasChanges: {}
+	, _checkChanges: function () {
+		Forms.hasChanges.set(_.any(Forms._hasChanges));
+	}
+	, hasChanges: new ReactiveVar(false)
 };
+
+// prevent hot code reloads when user has data.
+// XXX we should actually store this data in some way and restore it after
+// migration
+Meteor._reload.onMigrate(function (retry) {
+	if (Forms.hasChanges.get()) {
+		Tracker.autorun(function () {
+			if (!Forms.hasChanges.get()) retry();
+		});
+		return false;
+	} else {
+		return [true];
+	}
+});
