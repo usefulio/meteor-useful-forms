@@ -18,10 +18,11 @@ ShadowObject.shadow.fn.hasPendingSave = function (val) {
 		return this._pendingSave.get();
 	else {
 		this._pendingSave.set(val);
-		if (!val && this.hasOwnProperty('_pendingReset')) {
-			this.resetOriginal(this._pendingReset);
+		if (!val) {
+			// be sure to reset the form
+			this.resetOriginal(this._pendingReset || this.original);
 			delete this._pendingReset;
-		} 
+		}
 	}
 
 };
