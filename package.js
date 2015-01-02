@@ -19,8 +19,8 @@ Package.on_use(function (api, where) {
   api.use("cwohlman:shadow-objects@0.1.1");
   api.imply("cwohlman:shadow-objects@0.1.1");
 
-  api.use("cwohlman:collection-rules@0.1.0");
-  api.imply("cwohlman:collection-rules@0.1.0");
+  api.use("cwohlman:collection-rules@0.1.1");
+  api.imply("cwohlman:collection-rules");
   
   // Core api
   api.add_files('forms.html', ['client']);
